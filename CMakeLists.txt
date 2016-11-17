@@ -18,8 +18,16 @@ set(SOURCE_ROOT src)
 aux_source_directory(${SOURCE_ROOT} SRC_LIST)
 qt5_wrap_cpp(QT_WRAPPED_SRC ${SRC_LIST})
 
+add_subdirectory(3party/jsoncpp)
+include_directories(3party/jsoncpp/include)
+aux_source_directory(3party/jsoncpp/src/lib_json JSONCPP_SRC)
+
+add_subdirectory(3party/pugixml)
+include_directories(3party/pugixml/src)
+aux_source_directory(3party/pugixml/src PUGIXML_SRC)
+
 # Create executable by SRC_LIST.
-add_executable(${PROJECT_NAME} ${SRC_LIST} ${QT_WRAPPED_SRC})
+add_executable(${PROJECT_NAME} ${SRC_LIST} ${QT_WRAPPED_SRC} ${JSONCPP_SRC} ${PUGIXML_SRC})
 
 # Qt modules
 qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
