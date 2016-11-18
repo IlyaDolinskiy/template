@@ -8,6 +8,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <pugixml.hpp>
+
 void WriteJson()
 {
   Json::Value settings;
@@ -58,6 +60,70 @@ void ReadJson()
   std::cout << entities["gun"]["health"].asInt() << std::endl;
   std::cout << entities["alien"]["health"].asInt() << std::endl;
   std::cout << entities["obstacle"]["health"].asInt() << std::endl;
+}
+
+void WriteXml()
+{
+  pugi::xml_document doc;
+  auto declarationNode = doc.append_child(pugi::node_declaration);
+  declarationNode.append_attribute("version") = "1.0";
+  declarationNode.append_attribute("encoding") = "UTF-8";
+
+  auto root = doc.append_child("settings");
+  pugi::xml_node resolutions = root.append_child("resolutions");
+  resolutions.append_child("resolution").append_child(pugi::node_pcdata).set_value("800x600");
+  resolutions.append_child("resolution").append_child(pugi::node_pcdata).set_value("1024x768");
+  resolutions.append_child("resolution").append_child(pugi::node_pcdata).set_value("1280x1024");
+
+  root.append_child("aliensCount").append_attribute("value").set_value(100);
+  root.append_child("bulletsCount").append_attribute("value").set_value(200);
+
+  pugi::xml_node entities = root.append_child("entities");
+  entities.append_child("gun").append_attribute("health").set_value(50);
+  entities.append_child("alien").append_attribute("health").set_value(20);
+  entities.append_child("obstacle").append_attribute("health").set_value(15);
+
+  doc.save_file("settings.xml", PUGIXML_TEXT("  "));
+}
+
+void ReadXml()
+{
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_file("settings.xml", pugi::parse_default | pugi::parse_declaration);
+  if (result)
+  {
+    pugi::xml_node root = doc.document_element();
+    pugi::xml_node resolutions = root.child("resolutions");
+    if (!resolutions.empty())
+    {
+      for (pugi::xml_node const & resolution : resolutions.children())
+        std::cout << resolution.child_value() << std::endl;
+    }
+
+    pugi::xml_node aliensCount = root.child("aliensCount");
+    if (!aliensCount.empty())
+      std::cout << aliensCount.attribute("value").as_int() << std::endl;
+
+    pugi::xml_node bulletsCount = root.child("bulletsCount");
+    if (!bulletsCount.empty())
+      std::cout << bulletsCount.attribute("value").as_int() << std::endl;
+
+    pugi::xml_node entities = root.child("entities");
+    if (!entities.empty())
+    {
+      pugi::xml_node gun = entities.child("gun");
+      if (!gun.empty())
+        std::cout << gun.attribute("health").as_int() << std::endl;
+
+      pugi::xml_node alien = entities.child("alien");
+      if (!alien.empty())
+        std::cout << alien.attribute("health").as_int() << std::endl;
+
+      pugi::xml_node obstacle = entities.child("obstacle");
+      if (!obstacle.empty())
+        std::cout << obstacle.attribute("health").as_int() << std::endl;
+    }
+  }
 }
 
 int main(int argc, char ** argv)
