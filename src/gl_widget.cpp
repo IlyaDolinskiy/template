@@ -9,6 +9,7 @@
 #include <QtGui/QGuiApplication>
 #include <cmath>
 
+#include <chrono>
 #include <iostream>
 
 #include "main_window.hpp"
@@ -72,7 +73,10 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
   int const elapsed = m_time.elapsed();
-  Update(elapsed / 1000.0f);
+
+  static std::chrono::time_point<std::chrono::steady_clock> lastCallTimestamp = std::chrono::steady_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - lastCallTimestamp);
+  Update(duration.count() / 1000.0f);
 
   QPainter painter;
   painter.begin(this);
@@ -120,7 +124,7 @@ void GLWidget::resizeGL(int w, int h)
 
 void GLWidget::Update(float elapsedSeconds)
 {
-  float const kSpeed = 20.0f; // pixels per second.
+  float const kSpeed = 10.0f; // pixels per second.
 
   if (m_directions[kUpDirection])
     m_position.setY(m_position.y() + kSpeed * elapsedSeconds);
