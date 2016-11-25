@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "dummy.hpp"
+#include "dummy/dummy.hpp"
 
 TEST(dummy_test, test_sum)
 {

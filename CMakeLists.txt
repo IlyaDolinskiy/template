@@ -16,10 +16,11 @@ set(SOURCE_ROOT src)
 
 # Scan source folder to find all sources and put the result to SRC_LIST.
 aux_source_directory(${SOURCE_ROOT} SRC_LIST)
-qt5_wrap_cpp(QT_WRAPPED_SRC ${SRC_LIST})
+aux_source_directory(${SOURCE_ROOT}/dummy SRC_LIST_DUMMY)
+qt5_wrap_cpp(QT_WRAPPED_SRC ${SRC_LIST} ${SRC_LIST_DUMMY})
 
 # Create executable by SRC_LIST.
-add_executable(${PROJECT_NAME} ${SRC_LIST} ${QT_WRAPPED_SRC})
+add_executable(${PROJECT_NAME} ${SRC_LIST} ${QT_WRAPPED_SRC} ${SRC_LIST_DUMMY})
 
 # Qt modules
 qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
@@ -36,7 +37,7 @@ include_directories(3party/googletest/googletest/include ${SOURCE_ROOT})
 # Set up testing project.
 set(TESTS_SOURCE_ROOT tests)
 aux_source_directory(${TESTS_SOURCE_ROOT} TEST_SRC_FILES)
-set(TEST_SRC_FILES ${SRC_LIST} ${TEST_SRC_FILES})
+set(TEST_SRC_FILES ${SRC_LIST} ${SRC_LIST_DUMMY} ${TEST_SRC_FILES})
 list(REMOVE_ITEM TEST_SRC_FILES src/main.cpp)
 qt5_wrap_cpp(QT_WRAPPED_TEST_SRC ${TEST_SRC_FILES})
 add_executable(${PROJECT_TEST_NAME} ${TEST_SRC_FILES} ${QT_WRAPPED_TEST_SRC})
